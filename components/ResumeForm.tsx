@@ -45,6 +45,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
       id: crypto.randomUUID(),
       company: '',
       position: '',
+      location: '',
       startDate: '',
       endDate: '',
       current: false,
@@ -222,21 +223,32 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Start Date</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Location</label>
                   <input 
-                    value={exp.startDate} 
-                    onChange={(e) => updateExperience(exp.id, { startDate: e.target.value })}
+                    value={exp.location} 
+                    onChange={(e) => updateExperience(exp.id, { location: e.target.value })}
+                    placeholder="Remote / New York, NY"
                     className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 outline-none" 
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">End Date</label>
-                  <input 
-                    value={exp.endDate} 
-                    onChange={(e) => updateExperience(exp.id, { endDate: e.target.value })}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 outline-none" 
-                    placeholder={exp.current ? 'Present' : ''}
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Start Date</label>
+                    <input 
+                      value={exp.startDate} 
+                      onChange={(e) => updateExperience(exp.id, { startDate: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">End Date</label>
+                    <input 
+                      value={exp.endDate} 
+                      onChange={(e) => updateExperience(exp.id, { endDate: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 outline-none" 
+                      placeholder={exp.current ? 'Present' : ''}
+                    />
+                  </div>
                 </div>
                 <div className="col-span-2">
                    <div className="flex justify-between items-center mb-1">
