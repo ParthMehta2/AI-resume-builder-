@@ -45,6 +45,7 @@ export interface AtsFeedback {
   category: 'Formatting' | 'Content' | 'Keywords';
   message: string;
   status: 'good' | 'warning' | 'critical';
+  suggestion?: string;
 }
 
 export interface AtsAnalysis {

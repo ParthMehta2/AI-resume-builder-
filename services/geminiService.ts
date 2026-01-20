@@ -45,11 +45,12 @@ export const optimizeExperienceBullet = async (bullet: string, jobTitle: string)
 export const analyzeAtsScore = async (data: ResumeData): Promise<AtsAnalysis> => {
   const prompt = `
     Analyze this resume for ATS (Applicant Tracking System) compatibility.
-    Focus on: Contact Info, Summary impact, Experience bullet points (quantifiable results), Skill coverage for ${data.personalInfo.jobTitle}.
+    Target Role: ${data.personalInfo.jobTitle || 'Professional'}
+    Focus on: Contact Info, Summary impact, Experience bullet points (quantifiable results), and Skill density.
     
     Resume Data: ${JSON.stringify(data)}
     
-    Provide a score (0-100) and specific feedback items with a status (good, warning, critical).
+    Provide a score (0-100) and specific feedback items with a status (good, warning, critical) and a short "suggestion" on how to fix it.
   `;
 
   const response = await ai.models.generateContent({
@@ -68,9 +69,10 @@ export const analyzeAtsScore = async (data: ResumeData): Promise<AtsAnalysis> =>
               properties: {
                 category: { type: Type.STRING },
                 message: { type: Type.STRING },
-                status: { type: Type.STRING }
+                status: { type: Type.STRING },
+                suggestion: { type: Type.STRING }
               },
-              required: ["category", "message", "status"]
+              required: ["category", "message", "status", "suggestion"]
             }
           }
         },

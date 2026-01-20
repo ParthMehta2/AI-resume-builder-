@@ -4,6 +4,7 @@ import { ResumeData, ResumeTemplate, AtsAnalysis } from './types';
 import ResumeForm from './components/ResumeForm';
 import ResumePreview from './components/ResumePreview';
 import AtsScoreCard from './components/AtsScoreCard';
+import AtsFeedbackDetails from './components/AtsFeedbackDetails';
 import { FileText, Download, Layout, Github, Sparkles, Save, RotateCcw, Upload, CheckCircle } from 'lucide-react';
 import { analyzeAtsScore } from './services/geminiService';
 
@@ -194,6 +195,11 @@ const App: React.FC = () => {
             </div>
 
             <ResumeForm data={data} updateData={handleUpdateData} />
+
+            {/* ATS Feedback Details Section */}
+            {(atsAnalysis || isAnalyzing) && (
+              <AtsFeedbackDetails analysis={atsAnalysis} loading={isAnalyzing} />
+            )}
             
             {/* Template Selector */}
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-100">
