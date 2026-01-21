@@ -5,7 +5,7 @@ import ResumeForm from './components/ResumeForm';
 import ResumePreview from './components/ResumePreview';
 import AtsScoreCard from './components/AtsScoreCard';
 import AtsFeedbackDetails from './components/AtsFeedbackDetails';
-import { FileText, Download, Layout, Github, Sparkles, Save, RotateCcw, Upload, CheckCircle } from 'lucide-react';
+import { FileText, Download, Layout, Sparkles, Save, RotateCcw, Upload, CheckCircle, Zap } from 'lucide-react';
 import { analyzeAtsScore } from './services/geminiService';
 
 const initialData: ResumeData = {
@@ -34,7 +34,6 @@ const App: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Persistence
   useEffect(() => {
     const savedData = localStorage.getItem('careerpro_resume_data');
     if (savedData) {
@@ -83,6 +82,10 @@ const App: React.FC = () => {
     try {
       const result = await analyzeAtsScore(data);
       setAtsAnalysis(result);
+      // Scroll to analysis results
+      setTimeout(() => {
+        document.getElementById('ats-analysis-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     } catch (err) {
       console.error(err);
     } finally {
@@ -119,177 +122,116 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen pb-20 selection:bg-indigo-100 selection:text-indigo-900">
       {/* Header */}
-      <header className={`sticky top-0 z-50 transition-all no-print ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
-              <FileText size={22} strokeWidth={2.5} />
+      <header className={`sticky top-0 z-50 transition-all no-print ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm border-b' : 'bg-transparent'}`}>
+        <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-100 group-hover:rotate-3 transition-transform">
+              <FileText size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 leading-none">
-                CareerPro AI
-              </h1>
-              {lastSaved && (
-                <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
-                  <CheckCircle size={8} className="text-green-500" /> Saved at {lastSaved}
-                </p>
-              )}
+              <h1 className="text-lg font-bold text-slate-900 leading-none">CareerPro AI</h1>
+              {lastSaved && <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Autosaved {lastSaved}</p>}
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-             <button 
-              onClick={() => fileInputRef.current?.click()}
-              className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
-              title="Import Data"
-            >
-              <Upload size={20} />
-            </button>
-            <input type="file" ref={fileInputRef} onChange={importFromJson} className="hidden" accept=".json" />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center bg-slate-100 p-1 rounded-lg">
+              <button onClick={() => fileInputRef.current?.click()} className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-white rounded-md transition-all" title="Import JSON">
+                <Upload size={18} />
+              </button>
+              <button onClick={exportToJson} className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-white rounded-md transition-all" title="Export JSON">
+                <Save size={18} />
+              </button>
+              <button onClick={handleReset} className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-white rounded-md transition-all" title="Reset">
+                <RotateCcw size={18} />
+              </button>
+            </div>
             
             <button 
-              onClick={exportToJson}
-              className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
-              title="Export Data"
+              onClick={handleRunAtsAnalysis}
+              disabled={isAnalyzing}
+              className="flex items-center gap-2 bg-white border border-indigo-200 text-indigo-600 px-4 py-2 rounded-lg font-bold text-sm transition-all hover:bg-indigo-50 shadow-sm active:scale-95 disabled:opacity-50"
             >
-              <Save size={20} />
+              <Zap size={16} fill="currentColor" /> {isAnalyzing ? 'Analyzing...' : 'AI Analysis'}
             </button>
-
-            <button 
-              onClick={handleReset}
-              className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
-              title="Reset Form"
-            >
-              <RotateCcw size={20} />
-            </button>
-
-            <div className="h-6 w-px bg-slate-200 mx-1" />
 
             <button 
               onClick={handlePrint}
-              className="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-sm transition-all shadow-md shadow-indigo-100 hover:shadow-lg active:scale-95"
+              className="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-sm transition-all shadow-md shadow-indigo-100 active:scale-95"
             >
-              <Download size={18} className="group-hover:translate-y-0.5 transition-transform" /> Download PDF
+              <Download size={18} /> Export PDF
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 pt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <input type="file" ref={fileInputRef} onChange={importFromJson} className="hidden" accept=".json" />
+
+      {/* Main Workspace */}
+      <main className="max-w-[1600px] mx-auto px-6 pt-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
           
-          {/* Form Section */}
-          <div className="lg:col-span-7 no-print space-y-6">
-            <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-              <div className="relative z-10">
-                <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  <Sparkles className="animate-pulse" /> AI Resume Studio
-                </h2>
-                <p className="text-indigo-100 text-sm opacity-90 max-w-md">
-                  Professional ATS optimization in your browser. All your data stays private and local.
-                </p>
-              </div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-500/20 rounded-full -ml-12 -mb-12 blur-xl" />
-            </div>
-
-            <ResumeForm data={data} updateData={handleUpdateData} />
-
-            {/* ATS Feedback Details Section */}
-            {(atsAnalysis || isAnalyzing) && (
-              <AtsFeedbackDetails analysis={atsAnalysis} loading={isAnalyzing} />
-            )}
-            
-            {/* Template Selector */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-100">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Layout size={14} /> Design Template
-              </h3>
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  { id: ResumeTemplate.MODERN, name: 'Modern', color: 'bg-indigo-600', desc: 'Standard & Tech' },
-                  { id: ResumeTemplate.CLASSIC, name: 'Classic', color: 'bg-slate-800', desc: 'Law & Finance' },
-                  { id: ResumeTemplate.MINIMAL, name: 'Minimal', color: 'bg-slate-400', desc: 'Creative' },
-                ].map((t) => (
+          {/* Editor Column */}
+          <div className="space-y-6 no-print">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <Sparkles size={14} className="text-indigo-500" /> Resume Editor
+              </h2>
+              <div className="flex gap-1">
+                {['MODERN', 'CLASSIC', 'MINIMAL'].map((t) => (
                   <button
-                    key={t.id}
-                    onClick={() => setTemplate(t.id)}
-                    className={`group p-4 rounded-xl border-2 transition-all text-left ${
-                      template === t.id 
-                        ? 'border-indigo-600 bg-indigo-50/50 shadow-sm' 
-                        : 'border-slate-50 hover:border-slate-200 hover:bg-slate-50'
+                    key={t}
+                    onClick={() => setTemplate(t as ResumeTemplate)}
+                    className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all border ${
+                      template === t ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    <div className={`w-8 h-1.5 rounded-full mb-3 ${t.color} group-hover:w-12 transition-all`} />
-                    <span className={`block text-sm font-bold ${template === t.id ? 'text-indigo-600' : 'text-slate-800'}`}>
-                      {t.name}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-medium">
-                      {t.desc}
-                    </span>
+                    {t}
                   </button>
                 ))}
               </div>
             </div>
+            <ResumeForm data={data} updateData={handleUpdateData} />
           </div>
 
-          {/* Sidebar Section (Preview & ATS) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
-            
-            {/* ATS Score Card */}
-            <AtsScoreCard analysis={atsAnalysis} loading={isAnalyzing} onAnalyze={handleRunAtsAnalysis} />
-
-             <div className="flex justify-between items-center no-print px-1">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                <div className="w-1 h-1 bg-slate-400 rounded-full" />
-                Live Preview
-              </span>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100/50">
-                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                Vercel Ready
-              </div>
-            </div>
-            
-            <div id="resume-container" className="shadow-2xl rounded-xl overflow-hidden border border-slate-200 bg-white origin-top transition-all duration-500 hover:shadow-indigo-100">
+          {/* Preview Column */}
+          <div className="xl:sticky xl:top-24 space-y-4">
+            <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest no-print">
+              Live Preview
+            </h2>
+            <div id="resume-container" className="shadow-2xl rounded-xl overflow-hidden border border-slate-200 bg-white min-h-[800px]">
                <ResumePreview data={data} template={template} />
             </div>
+          </div>
+        </div>
 
-            <div className="bg-slate-900 rounded-xl p-4 text-white/90 text-[11px] no-print">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
-                  <Download size={16} />
-                </div>
-                <div>
-                  <p className="font-bold text-white">Export Hint</p>
-                  <p className="opacity-70 leading-relaxed">For the perfect PDF, set <span className="text-indigo-400">Margins: None</span> and <span className="text-indigo-400">Scale: 100</span> in your browser's print settings.</p>
-                </div>
+        {/* Bottom ATS Section */}
+        <section id="ats-analysis-section" className="mt-12 no-print border-t pt-12">
+          <div className="max-w-5xl mx-auto space-y-8">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight">ATS Performance Dashboard</h2>
+              <p className="text-slate-500">Real-time analysis of your resume against industry standard recruiting algorithms.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-1">
+                <AtsScoreCard analysis={atsAnalysis} loading={isAnalyzing} onAnalyze={handleRunAtsAnalysis} />
+              </div>
+              <div className="md:col-span-2">
+                <AtsFeedbackDetails analysis={atsAnalysis} loading={isAnalyzing} />
               </div>
             </div>
           </div>
-
-        </div>
+        </section>
       </main>
 
-      {/* Footer Branding */}
-      <footer className="no-print border-t border-slate-200 mt-20 py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
-                <FileText size={16} />
-              </div>
-              <span className="font-bold text-slate-400">CareerPro AI</span>
-            </div>
-            <div className="flex gap-8">
-              <a href="#" className="text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase tracking-wider transition-colors">Privacy</a>
-              <a href="#" className="text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase tracking-wider transition-colors">Terms</a>
-              <a href="#" className="text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase tracking-wider transition-colors">Support</a>
-            </div>
-            <p className="text-slate-300 text-xs">
-              © 2024 AI Resume Studio. Powered by Gemini.
-            </p>
+      {/* Simplified Footer */}
+      <footer className="no-print border-t border-slate-200 mt-20 py-8 bg-white">
+        <div className="max-w-[1600px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2 text-slate-400 text-sm font-bold">
+            <FileText size={16} /> CareerPro AI 2024
           </div>
+          <p className="text-slate-300 text-xs">Built with Gemini Flash 2.5 • Private & Local Data</p>
         </div>
       </footer>
     </div>
