@@ -7,11 +7,11 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 export const rewriteProfessionalSummary = async (data: ResumeData): Promise<string> => {
   const prompt = `
     Rewrite a professional, ATS-optimized summary for a resume based on these details:
-    Target Job Title: ${data.personalInfo.jobTitle}
     Experience: ${data.experience.map(e => `${e.position} at ${e.company}`).join(', ')}
     Skills: ${data.skills.map(s => s.name).join(', ')}
     
     Make it punchy, result-oriented, and use strong action verbs. Keep it under 4 sentences.
+    Focus on the candidate's core strengths and professional identity derived from their work history.
     Return only the text of the summary.
   `;
 
@@ -23,9 +23,9 @@ export const rewriteProfessionalSummary = async (data: ResumeData): Promise<stri
   return response.text || '';
 };
 
-export const optimizeExperienceBullet = async (bullet: string, jobTitle: string): Promise<string> => {
+export const optimizeExperienceBullet = async (bullet: string): Promise<string> => {
   const prompt = `
-    The following is a bullet point from a professional resume for a ${jobTitle} role. 
+    The following is a bullet point from a professional resume. 
     Rewrite it to be more impactful using the STAR (Situation, Task, Action, Result) method or Google's XYZ formula. 
     Ensure it is ATS-optimized with relevant keywords.
     
@@ -45,7 +45,7 @@ export const optimizeExperienceBullet = async (bullet: string, jobTitle: string)
 export const analyzeAtsScore = async (data: ResumeData): Promise<AtsAnalysis> => {
   const prompt = `
     Analyze this resume for ATS (Applicant Tracking System) compatibility.
-    Target Role: ${data.personalInfo.jobTitle || 'Professional'}
+    Candidate: ${data.personalInfo.fullName || 'Professional'}
     Focus on: Contact Info, Summary impact, Experience bullet points (quantifiable results), and Skill density.
     
     Resume Data: ${JSON.stringify(data)}

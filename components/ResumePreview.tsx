@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ResumeData, ResumeTemplate } from '../types';
-import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe, ExternalLink } from 'lucide-react';
 
 interface ResumePreviewProps {
   data: ResumeData;
@@ -16,7 +16,6 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) => {
     <div className="bg-white min-h-[1100px] p-10 font-sans shadow-inner">
       <header className="border-b-4 border-indigo-600 pb-6 mb-8">
         <h1 className="text-4xl font-bold text-slate-900 tracking-tight">{personalInfo.fullName || 'YOUR NAME'}</h1>
-        <p className="text-xl text-indigo-600 font-medium mt-1">{personalInfo.jobTitle || 'JOB TITLE'}</p>
         
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-slate-500 text-sm">
           {personalInfo.email && <div className="flex items-center gap-1.5"><Mail size={14} /> {personalInfo.email}</div>}
@@ -58,14 +57,18 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) => {
           {projects.length > 0 && (
             <section>
               <h2 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Selected Projects</h2>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {projects.map((proj) => (
                   <div key={proj.id}>
-                    <h3 className="text-md font-bold text-slate-800 flex items-center gap-2">
-                      {proj.title} 
-                      {proj.link && <span className="text-xs text-indigo-500 font-normal underline">{proj.link}</span>}
-                    </h3>
-                    <p className="text-slate-600 text-sm mt-1">{proj.description}</p>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-md font-bold text-slate-800">{proj.title}</h3>
+                      {proj.link && (
+                        <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                          View Project <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">{proj.description}</p>
                   </div>
                 ))}
               </div>
@@ -121,25 +124,46 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-10">
-        <section>
-          <h2 className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4 uppercase tracking-widest">About</h2>
-          <p className="text-sm leading-relaxed text-slate-600">{summary}</p>
-        </section>
+        {summary && (
+          <section>
+            <h2 className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4 uppercase tracking-widest">About</h2>
+            <p className="text-sm leading-relaxed text-slate-600">{summary}</p>
+          </section>
+        )}
 
-        <section>
-          <h2 className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4 uppercase tracking-widest">Experience</h2>
-          <div className="space-y-8">
-            {experience.map(exp => (
-              <div key={exp.id}>
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="text-sm font-bold">{exp.position} — <span className="font-normal italic text-slate-500">{exp.company}</span></h3>
-                  <span className="text-[10px] text-slate-400">{exp.startDate} - {exp.endDate}</span>
+        {experience.length > 0 && (
+          <section>
+            <h2 className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4 uppercase tracking-widest">Experience</h2>
+            <div className="space-y-8">
+              {experience.map(exp => (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="text-sm font-bold">{exp.position} — <span className="font-normal italic text-slate-500">{exp.company}</span></h3>
+                    <span className="text-[10px] text-slate-400">{exp.startDate} - {exp.endDate}</span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{exp.description}</p>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{exp.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects.length > 0 && (
+          <section>
+            <h2 className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4 uppercase tracking-widest">Projects</h2>
+            <div className="space-y-6">
+              {projects.map(proj => (
+                <div key={proj.id}>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="text-sm font-bold">{proj.title}</h3>
+                    {proj.link && <span className="text-[10px] text-slate-400 font-mono lowercase">{proj.link.replace(/^https?:\/\/(www\.)?/, '')}</span>}
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">{proj.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="grid grid-cols-2 gap-10">
           <section>
@@ -178,35 +202,56 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template }) => {
       </div>
 
       <div className="space-y-6">
-        <section>
-          <h2 className="text-lg font-bold border-b border-black mb-2 uppercase">Professional Summary</h2>
-          <p className="text-[13px] text-justify">{summary}</p>
-        </section>
+        {summary && (
+          <section>
+            <h2 className="text-lg font-bold border-b border-black mb-2 uppercase">Professional Summary</h2>
+            <p className="text-[13px] text-justify">{summary}</p>
+          </section>
+        )}
 
-        <section>
-          <h2 className="text-lg font-bold border-b border-black mb-3 uppercase">Experience</h2>
-          <div className="space-y-4">
-            {experience.map(exp => (
-              <div key={exp.id}>
-                <div className="flex justify-between font-bold text-[14px]">
-                  <span>{exp.company}</span>
-                  <span>{exp.location || ''}</span>
+        {experience.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold border-b border-black mb-3 uppercase">Experience</h2>
+            <div className="space-y-4">
+              {experience.map(exp => (
+                <div key={exp.id}>
+                  <div className="flex justify-between font-bold text-[14px]">
+                    <span>{exp.company}</span>
+                    <span>{exp.location || ''}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] italic mb-1">
+                    <span>{exp.position}</span>
+                    <span>{exp.startDate} – {exp.endDate || 'Present'}</span>
+                  </div>
+                  <div className="text-[13px] pl-4 whitespace-pre-line">
+                    {exp.description.split('\n').map((line, i) => (
+                      <div key={i} className="relative before:content-['•'] before:absolute before:-left-4">
+                        {line.replace(/^•\s*/, '')}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex justify-between text-[13px] italic mb-1">
-                  <span>{exp.position}</span>
-                  <span>{exp.startDate} – {exp.endDate || 'Present'}</span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold border-b border-black mb-3 uppercase">Projects</h2>
+            <div className="space-y-4">
+              {projects.map(proj => (
+                <div key={proj.id}>
+                  <div className="flex justify-between font-bold text-[14px]">
+                    <span>{proj.title}</span>
+                    <span className="font-normal italic text-[12px]">{proj.link}</span>
+                  </div>
+                  <p className="text-[13px] text-justify">{proj.description}</p>
                 </div>
-                <div className="text-[13px] pl-4 whitespace-pre-line">
-                  {exp.description.split('\n').map((line, i) => (
-                    <div key={i} className="relative before:content-['•'] before:absolute before:-left-4">
-                      {line.replace(/^•\s*/, '')}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section>
           <h2 className="text-lg font-bold border-b border-black mb-3 uppercase">Education</h2>

@@ -16,7 +16,6 @@ const initialData: ResumeData = {
     location: '',
     website: '',
     linkedin: '',
-    jobTitle: '',
   },
   summary: '',
   experience: [],

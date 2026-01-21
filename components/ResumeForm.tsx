@@ -104,16 +104,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Target Job Title</label>
-              <input 
-                name="jobTitle" 
-                value={data.personalInfo.jobTitle} 
-                onChange={handlePersonalInfoChange} 
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" 
-                placeholder="Senior Software Engineer"
-              />
-            </div>
-            <div>
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</label>
               <input 
                 name="email" 
@@ -133,7 +123,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
                 placeholder="+1 234 567 890"
               />
             </div>
-            <div>
+            <div className="col-span-1 md:col-span-2">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Location</label>
               <input 
                 name="location" 
