@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AtsAnalysis } from '../types';
-import { TrendingUp, Zap } from 'lucide-react';
+import { TrendingUp, BarChart3 } from 'lucide-react';
 
 interface AtsScoreCardProps {
   analysis: AtsAnalysis | null;
@@ -28,13 +28,13 @@ const AtsScoreCard: React.FC<AtsScoreCardProps> = ({ analysis, loading, onAnalyz
         <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4 text-indigo-600 rotate-3">
           <TrendingUp size={32} />
         </div>
-        <h3 className="font-bold text-slate-800 text-lg mb-2">Check Readiness</h3>
-        <p className="text-sm text-slate-500 mb-6">Validate your resume formatting and keyword density.</p>
+        <h3 className="font-bold text-slate-800 text-lg mb-2">Check ATS Score</h3>
+        <p className="text-sm text-slate-500 mb-6">Evaluate your resume readiness and keyword optimization.</p>
         <button 
           onClick={onAnalyze}
           className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2"
         >
-          <Zap size={18} fill="currentColor" /> Analyze Now
+          <BarChart3 size={18} /> Calculate Score
         </button>
       </div>
     );
@@ -65,7 +65,7 @@ const AtsScoreCard: React.FC<AtsScoreCardProps> = ({ analysis, loading, onAnalyz
           onClick={onAnalyze}
           className="mt-8 text-xs font-black text-indigo-600 uppercase tracking-widest hover:underline"
         >
-          Re-Scan Content
+          Update Score
         </button>
       )}
     </div>

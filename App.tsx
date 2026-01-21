@@ -5,7 +5,7 @@ import ResumeForm from './components/ResumeForm';
 import ResumePreview from './components/ResumePreview';
 import AtsScoreCard from './components/AtsScoreCard';
 import AtsFeedbackDetails from './components/AtsFeedbackDetails';
-import { FileText, Download, Layout, Sparkles, Save, RotateCcw, Upload, CheckCircle, Zap } from 'lucide-react';
+import { FileText, Download, Save, RotateCcw, Upload } from 'lucide-react';
 import { analyzeAtsScore } from './services/geminiService';
 
 const initialData: ResumeData = {
@@ -129,12 +129,19 @@ const App: React.FC = () => {
               <FileText size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-none">CareerPro AI</h1>
+              <h1 className="text-lg font-bold text-slate-900 leading-none">CareerPro</h1>
               {lastSaved && <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Autosaved {lastSaved}</p>}
             </div>
           </div>
 
           <div className="flex items-center gap-4">
+            {atsAnalysis && (
+              <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full border border-slate-200">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ATS Score:</span>
+                <span className={`text-sm font-bold ${atsAnalysis.score >= 80 ? 'text-green-600' : 'text-amber-500'}`}>{atsAnalysis.score}%</span>
+              </div>
+            )}
+            
             <div className="flex items-center bg-slate-100 p-1 rounded-lg">
               <button onClick={() => fileInputRef.current?.click()} className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-white rounded-md transition-all" title="Import JSON">
                 <Upload size={18} />
@@ -146,14 +153,6 @@ const App: React.FC = () => {
                 <RotateCcw size={18} />
               </button>
             </div>
-            
-            <button 
-              onClick={handleRunAtsAnalysis}
-              disabled={isAnalyzing}
-              className="flex items-center gap-2 bg-white border border-indigo-200 text-indigo-600 px-4 py-2 rounded-lg font-bold text-sm transition-all hover:bg-indigo-50 shadow-sm active:scale-95 disabled:opacity-50"
-            >
-              <Zap size={16} fill="currentColor" /> {isAnalyzing ? 'Analyzing...' : 'AI Analysis'}
-            </button>
 
             <button 
               onClick={handlePrint}
@@ -174,8 +173,8 @@ const App: React.FC = () => {
           {/* Editor Column */}
           <div className="space-y-6 no-print">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <Sparkles size={14} className="text-indigo-500" /> Resume Editor
+              <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">
+                Resume Content
               </h2>
               <div className="flex gap-1">
                 {['MODERN', 'CLASSIC', 'MINIMAL'].map((t) => (
@@ -210,7 +209,7 @@ const App: React.FC = () => {
           <div className="max-w-5xl mx-auto space-y-8">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black text-slate-900 tracking-tight">ATS Performance Dashboard</h2>
-              <p className="text-slate-500">Real-time analysis of your resume against industry standard recruiting algorithms.</p>
+              <p className="text-slate-500">Analyze how well your resume is optimized for applicant tracking systems.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -229,9 +228,9 @@ const App: React.FC = () => {
       <footer className="no-print border-t border-slate-200 mt-20 py-8 bg-white">
         <div className="max-w-[1600px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2 text-slate-400 text-sm font-bold">
-            <FileText size={16} /> CareerPro AI 2024
+            <FileText size={16} /> CareerPro 2024
           </div>
-          <p className="text-slate-300 text-xs">Built with Gemini Flash 2.5 • Private & Local Data</p>
+          <p className="text-slate-300 text-xs">ATS-Optimized Resume Builder</p>
         </div>
       </footer>
     </div>

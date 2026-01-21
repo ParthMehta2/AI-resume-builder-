@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
-import { ResumeData, PersonalInfo, Experience, Education, Skill, Project } from '../types';
-import { Plus, Trash2, Wand2, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
-import { rewriteProfessionalSummary, optimizeExperienceBullet } from '../services/geminiService';
+import { ResumeData, Experience, Education } from '../types';
+import { Plus, Trash2, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface ResumeFormProps {
   data: ResumeData;
@@ -11,7 +10,6 @@ interface ResumeFormProps {
 
 const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [loadingAI, setLoadingAI] = useState<string | null>(null);
 
   const steps = [
     { title: 'Basics', id: 'basics' },
@@ -26,18 +24,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
     updateData({
       personalInfo: { ...data.personalInfo, [name]: value }
     });
-  };
-
-  const handleSummaryAI = async () => {
-    setLoadingAI('summary');
-    try {
-      const newSummary = await rewriteProfessionalSummary(data);
-      updateData({ summary: newSummary });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingAI(null);
-    }
   };
 
   const addExperience = () => {
@@ -62,18 +48,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
     updateData({
       experience: data.experience.map(e => e.id === id ? { ...e, ...updates } : e)
     });
-  };
-
-  const handleOptimizeExp = async (id: string, description: string) => {
-    setLoadingAI(id);
-    try {
-      const optimized = await optimizeExperienceBullet(description, data.personalInfo.jobTitle);
-      updateExperience(id, { description: optimized });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingAI(null);
-    }
   };
 
   const addEducation = () => {
@@ -174,14 +148,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
           <div className="relative">
             <div className="flex justify-between items-center mb-2">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Professional Summary</label>
-              <button 
-                onClick={handleSummaryAI}
-                disabled={loadingAI === 'summary'}
-                className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors disabled:opacity-50"
-              >
-                <Sparkles size={14} />
-                {loadingAI === 'summary' ? 'Writing...' : 'AI Generate'}
-              </button>
             </div>
             <textarea 
               rows={4}
@@ -253,14 +219,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, updateData }) => {
                 <div className="col-span-2">
                    <div className="flex justify-between items-center mb-1">
                     <label className="block text-[10px] font-bold text-slate-400 uppercase">Achievements & Responsibilities</label>
-                    <button 
-                      onClick={() => handleOptimizeExp(exp.id, exp.description)}
-                      disabled={loadingAI === exp.id || !exp.description}
-                      className="flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 disabled:opacity-50"
-                    >
-                      <Wand2 size={12} />
-                      {loadingAI === exp.id ? 'Optimizing...' : 'AI Rewrite'}
-                    </button>
                   </div>
                   <textarea 
                     rows={3}
